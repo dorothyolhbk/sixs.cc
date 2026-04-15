@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>性福导航</title>
+	
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .header {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00c6ff, #0072ff, #9400d3);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color: #a0a0a0;
+            font-size: 1rem;
+        }
+
+        .gallery {
+            width: 90%;
+            max-width: 1200px;
+            margin: 100px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .image-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+            animation: flyIn 1s ease-out forwards;
+            opacity: 0;
+            transition: transform 0.3s ease;
+            padding-bottom: 75%;
+            height: 0;
+        }
+
+        .image-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .image-link:hover .image-overlay {
+            transform: translateY(0);
+        }
+
+        .image-link:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-title {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .image-description {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+
+        .icons-section {
+            width: 100%;
+            margin: 60px auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .icons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .icon-column {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+            padding: 0 10px;
+        }
+
+        .icon-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .icon-item {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            overflow: hidden;
+            position: relative;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .icon-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .icon-text {
+            font-size: 0.8rem;
+            text-align: center;
+            color: #ffffff;
+            transition: color 0.3s ease;
+        }
+
+        .icon-link:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon-link:hover .icon-item {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #2a5298, #1e3c72);
+        }
+
+        .icon-link:hover .icon-item img {
+            transform: scale(1.1);
+        }
+
+        .icon-link:hover .icon-text {
+            color: #00c6ff;
+        }
+
+        .icon-left {
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+
+        .icon-right {
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease;
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background-color: #333;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            border-radius: 2px;
+            animation: loading 2s ease-out forwards;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 10s linear infinite;
+        }
+
+        @keyframes flyIn {
+            0% {
+                opacity: 0;
+                transform: translateZ(-1000px) rotateY(45deg);
+            }
+            70% {
+                opacity: 1;
+                transform: translateZ(50px) rotateY(-5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: translateZ(0) rotateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes loading {
+            0% {
+                width: 0;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 0;
+                transform: translateY(100%) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90%) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-90%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100%) scale(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .image-container {
+                padding-bottom: 75%;
+            }
+            
+            .icon-column {
+                padding: 0 5px;
+            }
+            
+            .icon-link {
+                padding: 10px 5px;
+            }
+            
+            .icon-item {
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+            
+            .icon-text {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="loading-text">美媚洗澡中...</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>性福导航</h1>
+            <p>探索性爱的无限可能</p>
+        </div>
+
+        <div class="gallery" id="gallery">
+            <!-- 图片将通过JavaScript动态加载 -->
+        </div>
+
+        <div class="icons-section">
+            <div class="icons-container" id="icons-container">
+                <!-- 图标将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 确保DOM完全加载后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 模拟加载过程
+            setTimeout(function() {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.style.opacity = '0';
+                    setTimeout(function() {
+                        loading.style.display = 'none';
+                    }, 1000);
+                }
+            }, 2000);
+
+            // 创建粒子背景
+            createParticles();
+
+            // 图片数据
+            const images = [
+                       { 
+                    src: 'https://xm99.img4758972832.com:5658/8888/xm/5088/320x185.gif', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://c1121h3b.5086625.top:5088/facai.html?xm8050' // 修改这里的链接
+                },
+                { 
+                    src: 'https://img.alicdn.com/bao/uploaded/i2/6000000006249/O1CN01gpTZha1w2682UJTmD_!!6000000006249-1-remus.gif', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://www.kda2z.com:8888/' // 修改这里的链接
+                },
+                { 
+                    src: 'https://img.alicdn.com/imgextra/i3/4183327079/O1CN01vQ2ysK22AEokQZeiA_!!4183327079.gif', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://45660801.sizled.com/?cid=310446' // 修改这里的链接
+                },
+                { 
+                    src: 'https://imgsa.baidu.com/forum/pic/item/0b55b319ebc4b745a48c520589fc1e178a82158d.jpg', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://2pg.91314434.cc/' // 修改这里的链接
+                },
+                { 
+                    src: 'https://v.山东面粉.com/e20241129_2010_1.gif', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://vkbxbi.d14cexoye.com/dx10wrluir/xx/z1281427291/idx.html' // 修改这里的链接
+                },
+                { 
+                    src: 'https://img.xmshengchao.com:1688/images/f60a46c6-b6a1-4fe9-a2d2-940bba27ba37', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://487平等公正.爱国敬业.新疆铁道职业技术学院.com:26548/GAgpj' // 修改这里的链接
+                },
+                
+                { 
+                    src: 'https://qrsa.yxai123.com/9864a346cb19ec5b0bb352fb6c059678.gif', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://64.f64274929.com/' // 修改这里的链接
+                },
+                { 
+                     src: 'https://www.n55abc.com/tt60400.gif', 
+                    title: '点我看看', 
+                    description: '让你想不到的意外',
+                    link: 'https://www.tfboys66.com/nice.htm?10175' // 修改这里的链接
+                }
+            ];
+
+            // 图标数据 - 你可以随意增加或减少图标数量
+            const icons = [
+               { 
+                    src: 'https://i1.wp.com/img.erpweb.eu.org/imgs/2025/08/28e977e3b333508e.gif', 
+                    side: 'left', 
+                    text: 'U体育', 
+                    link: 'https://mobi.usz88.com/sz/index8.html' 
+                },
+                { 
+                    src: 'https://imgsa.baidu.com/forum/pic/item/3bf33a87e950352a95d5d61a1543fbf2b2118b68.jpg', 
+                    side: 'left', 
+                    text: '286娱乐', 
+                    link: 'https://2pg.91314434.cc/' 
+                },
+                { 
+                    src: 'https://fcw1.site/i/2025/08/09/x8eel0.gif', 
+                    side: 'right', 
+                    text: '注册送8888', 
+                    link: 'https://146.103.87.104:5001/?dl=$5bzgh3$CNY$2' 
+                },
+                { 
+                    src: 'https://taohua.ynye119.com/th/150-8.gif', 
+                    side: 'left', 
+                    text: '免费看片', 
+                    link: 'https://xn--20251021x-ju0w.baihu45.buzz/bhsp/' 
+                },
+                { 
+                    src: 'https://img.xmshengchao.com:1688/images/9c34af05-81b9-4d1f-be63-734d70262b44', 
+                    side: 'right', 
+                    text: '大發赌场', 
+                    link: 'https://487平等公正.爱国敬业.新疆铁道职业技术学院.com:26548/GAgpj' 
+                },
+				{ 
+                    src: 'https://imgsa.baidu.com/forum/pic/item/3bf33a87e950352a95d5d61a1543fbf2b2118b68.jpg', 
+                    side: 'left', 
+                    text: '286娱乐', 
+                    link: 'https://2pg.91314434.cc/' 
+                },
+                { 
+                    src: 'https://raw.githubusercontent.com/babacaoxiaoh/yiqicao.cc/refs/heads/main/images/photo_6143035756209966244_m.jpg', 
+                    side: 'left', 
+                    text: '小红书成人版', 
+                    link: 'https://xhs300.xyz/?code=dVuP1b&e=xhslandpage' 
+                },
+                { 
+                    src: 'https://qrsa.yxai123.com/f1067f057f9f3415205bc5de44bd7d5b.gif', 
+                    side: 'right', 
+                    text: '澳门葡京', 
+                    link: 'https://64.f64274929.com/' 
+                },
+                { 
+                    src: 'https://img.xyzane113.top/xinjia150x150.gif', 
+                    side: 'left', 
+                    text: '新加坡娱乐城', 
+                    link: 'http://pbja811906-2015627338.ap-southeast-1.elb.amazonaws.com:16441/?id=617309564' 
+                },
+                { 
+                    src: 'https://pg777111.img3784715638.com:8585/8888/pg507/logo1.gif', 
+                    side: 'right', 
+                    text: '开元棋牌', 
+                    link: 'https://777995.50701647.com:507/ad88.html?pg6002#pg6002' 
+                },
+                { 
+                    src: 'https://ads.cdnetworks.link/20251107-1/44dfd191befd0961fdfd92b9f8486492.webp', 
+                    side: 'right', 
+                    text: '免费看片', 
+                    link: 'https://d12txwfc1dj8ci.cloudfront.net/?dc=SYa756' 
+                },
+                { 
+                    src: 'https://aispsp02.top/img/pg8389.gif', 
+                    side: 'right', 
+                    text: 'PG电子', 
+                    link: 'https://w-ap.huogoudian.com/' 
+                },
+                { 
+                    src: 'https://img.ah7907.com/388-200x200.gif', 
+                    side: 'left', 
+                    text: '太陽城', 
+                    link: 'https://b3b2s-234.gcdws8.com/?shareName=388x330' 
+                },
+                { 
+                    src: 'https://p0.meituan.net/video/38885892a6c54181530b0a844fec11cb175836.gif', 
+                    side: 'right', 
+                    text: 'PG娱乐', 
+                    link: 'https://p25081401-77fea3eedcea1664.elb.ap-east-1.amazonaws.com:8088/' 
+                },
+                { 
+                    src: 'https://pic-375.kaiyuan375.com/images/bu94px27nf36-90-1', 
+                    side: 'left', 
+                    text: '澳門新葡京', 
+                    link: 'https://20.243.137.227:3429/8110ld/?shareName=17870322' 
+                },
+                { 
+                    src: 'https://i1.wp.com/img.erpweb.eu.org/imgs/2025/06/8f4f70540c8535f7.gif', 
+                    side: 'right', 
+                    text: '免費蘿莉島', 
+                    link: 'https://jp0707.flarotremixzorlen.com/yj/51783/lldojdp12' 
+                },
+                { 
+                    src: 'https://img.tupiantuoguan.cc/02.gif', 
+                    side: 'left', 
+                    text: '色情看片', 
+                    link: 'https://assaff-121235ff12361as.7x0qg.cyou/wf9954saf' 
+                },
+                { 
+                    src: 'https://ads.cdnetworks.link/20250623-1/2d3f39761cb07890dcc066bf1e8e6e79.webp', 
+                    side: 'right', 
+					text: '福利视频', 
+                    link: 'https://assaff-121235ff12361as.7x0qg.cyou/wf9954saf'
+                },
+                { 
+                    src: 'https://aispsp02.top/img/yj1.gif', 
+                    side: 'left', 
+                    text: 'AV视频', 
+                    link: 'https://0a34.hlnqjhk.cc/aff-x7qe' 
+                },
+                { 
+                    src: 'https://p0.meituan.net/video/d2dff33030410c5fefa8aca711f141f9676208.gif', 
+                    side: 'right', 
+                    text: '少妇AV', 
+                    link: 'https://4g.sfav20.cc/rukou/?%E8%AE%B010211546' 
+                },
+                { 
+                    src: 'https://teditvv.hxzdh50.top/%E7%99%BE%E5%BA%A6%E9%9F%B3%E4%B9%90/template/hxzdh/new/img/hihizkkz.gif', 
+                    side: 'right', 
+                    text: '呦女爱爱', 
+                    link: 'https://ss.matto.cc/?id=hxzzh' 
+                },
+                { 
+                    src: 'https://www.picpic169.cc/static/s1/toptb/yiy.gif', 
+                    side: 'left', 
+                    text: '人妻视频', 
+                    link: 'https://won3.zmxvqp69.com/04/?channelCode=vx330' 
+                },
+                { 
+                    src: 'https://b9.ks6299.top/6af7123b52b1ad7b00aab16d22f8d61e.gif', 
+                    side: 'right', 
+                    text: '澳门银河', 
+                    link: 'https://108.187.0.188:1113/299ad/a99le.html' 
+                },
+                { 
+                    src: 'https://img.erpweb.eu.org/imgs/2025/04/a67f6df2ca1e5bdc.gif', 
+                    side: 'left', 
+                    text: '免费看片', 
+                    link: 'https://d12txwfc1dj8ci.cloudfront.net/?dc=SYa756' 
+                },
+                { 
+                    src: 'https://picsislkss.1031.academy/i/2025/04/25/c39c9a917d1bbf7ca273ac9220b1d98dd0f99805.gif', 
+                    side: 'right', 
+                    text: '成人直播', 
+                    link: 'https://vtxl.cjybrx.com/097--01/?channelCode=vx330' 
+                },
+                { 
+                    src: 'https://www.picpic169.cc/static/s1/toptb/pjbc.gif', 
+                    side: 'left', 
+                    text: '情爱视频', 
+                    link: 'https://won3.zmxvqp69.com/04/?channelCode=vx330' 
+                },
+                { 
+                    src: 'https://www.picpic169.cc/static/s1/toptb/tb6.gif', 
+                    side: 'right', 
+                    text: '少女喷泉', 
+                    link: 'https://won3.zmxvqp69.com/04/?channelCode=vx330' 
+                },
+                { 
+                    src: 'https://fy8zyohojsag1kghrxvo.pojapp1.top/%E8%B6%85%E7%BA%A7%E5%BA%94%E7%94%A8/static/picture/51luoli.webp', 
+                    side: 'left', 
+                    text: '小污女', 
+                    link: 'https://xn---2700-z1owk-t81s.avnvtuan25.xyz/' 
+                },
+                { 
+                    src: 'https://www.picpic169.cc/static/s1/toptb/tb17.gif', 
+                    side: 'right', 
+                    text: 'UU视频', 
+                    link: 'https://aooxi876.hsxhjs4qe.cc/uusp-6gq11cobu' 
+                }
+                // 你可以在这里添加更多图标，例如：
+                // { 
+                //     src: 'https://picsum.photos/seed/icon31/100/100.jpg', 
+                //     side: 'left', 
+                //     text: '新图标', 
+                //     link: 'https://example.com/new-icon' 
+                // }
+            ];
+
+            // 加载图片
+            const gallery = document.getElementById('gallery');
+            if (gallery) {
+                for (let i = 0; i < images.length; i++) {
+                    setTimeout(function(index) {
+                        const image = images[index];
+                        
+                        const imageLink = document.createElement('a');
+                        imageLink.className = 'image-link';
+                        imageLink.href = image.link;
+                        imageLink.target = '_blank';
+                        
+                        const imageContainer = document.createElement('div');
+                        imageContainer.className = 'image-container';
+                        imageContainer.style.animationDelay = (index * 0.1) + 's';
+                        
+                        const img = document.createElement('img');
+                        img.src = image.src;
+                        img.alt = image.title;
+                        
+                        const overlay = document.createElement('div');
+                        overlay.className = 'image-overlay';
+                        
+                        const title = document.createElement('div');
+                        title.className = 'image-title';
+                        title.textContent = image.title;
+                        
+                        const description = document.createElement('div');
+                        description.className = 'image-description';
+                        description.textContent = image.description;
+                        
+                        overlay.appendChild(title);
+                        overlay.appendChild(description);
+                        
+                        imageContainer.appendChild(img);
+                        imageContainer.appendChild(overlay);
+                        
+                        imageLink.appendChild(imageContainer);
+                        gallery.appendChild(imageLink);
+                    }, 2500 + i * 100, i);
+                }
+            }
+
+            // 加载图标
+            const iconsContainer = document.getElementById('icons-container');
+            if (iconsContainer) {
+                const isMobile = window.innerWidth <= 768;
+                const columnsCount = isMobile ? 4 : 6; // 移动端4列，桌面端6列
+                
+                // 计算每列的图标数量
+                const iconsPerColumn = Math.ceil(icons.length / columnsCount);
+                
+                // 创建图标列
+                for (let i = 0; i < columnsCount; i++) {
+                    const column = document.createElement('div');
+                    column.className = 'icon-column';
+                    
+                    // 为每列添加图标
+                    for (let j = 0; j < iconsPerColumn; j++) {
+                        const iconIndex = i * iconsPerColumn + j;
+                        if (iconIndex < icons.length) {
+                            const icon = icons[iconIndex];
+                            
+                            const iconLink = document.createElement('a');
+                            iconLink.className = 'icon-link';
+                            iconLink.href = icon.link;
+                            iconLink.target = '_blank';
+                            
+                            const iconItem = document.createElement('div');
+                            iconItem.className = 'icon-item icon-' + icon.side;
+                            
+                            // 设置动画延迟，使图标依次出现
+                            iconItem.style.animationDelay = (3 + iconIndex * 0.1) + 's';
+                            
+                            // 使用图片而不是图标
+                            const iconImg = document.createElement('img');
+                            iconImg.src = icon.src;
+                            iconImg.alt = icon.text;
+                            
+                            // 添加图片加载错误处理
+                            iconImg.onerror = function() {
+                                // 图片加载失败时使用备用图片
+                                this.src = 'https://picsum.photos/seed/error/100/100.jpg';
+                            };
+                            
+                            // 添加图标文字
+                            const iconText = document.createElement('div');
+                            iconText.className = 'icon-text';
+                            iconText.textContent = icon.text;
+                            
+                            iconItem.appendChild(iconImg);
+                            iconLink.appendChild(iconItem);
+                            iconLink.appendChild(iconText);
+                            column.appendChild(iconLink);
+                        }
+                    }
+                    
+                    iconsContainer.appendChild(column);
+                }
+            }
+        });
+
+        // 创建粒子背景
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // 随机大小
+                const size = Math.random() * 3 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // 随机位置
+                particle.style.left = (Math.random() * 100) + '%';
+                
+                // 随机动画延迟和持续时间
+                const delay = Math.random() * 10;
+                const duration = Math.random() * 10 + 10;
+                particle.style.animationDelay = delay + 's';
+                particle.style.animationDuration = duration + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+    </script>
+	<div id="footer">
+		<p align="center"><a href="3" target="_blank" title="福利搜索"> 福利搜索</a> | <a target="_blank" href="https://t.me/hws886">商务合作</a></p>
+		<p align="center">我們立足於美利堅合眾國，對全球華人服務，受北美法律保護。<a href="index.html" target="_blank">性爱导航</a>版權所有，未經授權禁止複製或建立鏡像</p>
+		<p align="center">禁止未滿18周歲的訪客訪問性爱导航，為了你的學業與健康請勿瀏覽本站</p><!-- Histats.com START (aync)-->
+		<script type="text/javascript">
+			var _Hasync= _Hasync|| [];_Hasync.push(['Histats.start', '1,3257996,4,0,0,0,00010000']);_Hasync.push(['Histats.fasi', '1']);_Hasync.push(['Histats.track_hits', '']);(function() {var hs = document.createElement('script'); hs.type = 'text/javascript'; hs.async = true;hs.src = ('//s10.histats.com/js15_as.js');(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);})();
+		</script><noscript><a href="index.html" target="_blank"><img src="//sstatic1.histats.com/0.gif?3257996&101" alt="free hit counter code" border="0"></a></noscript><!-- Histats.com END -->
+	</div>
+</body>
+</html>
